@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this formalization, please cite it using these metadata. Automated proof tools are credited in the README and are not listed as authors."
+title: "The Intelligence Bound: Formal Verification in Lean 4"
+type: software
+authors:
+  - family-names: Hart
+    given-names: "Justin D."
+    affiliation: "Viridis LLC, Columbia Falls, Montana, USA"
+    orcid: "https://orcid.org/0009-0008-3082-2482"
+repository-code: "https://github.com/jdhart81/intelligence-bound-lean"
+abstract: "Formal verification in Lean 4 and Mathlib of the results in \"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information\" (Hart 2025): 9 theorems, no sorry, standard axioms only."
+license: Apache-2.0
+keywords:
+  - "Lean 4"
+  - "Mathlib"
+  - "formal verification"
+  - "information theory"
+  - "thermodynamics"
+  - "Landauer principle"
+  - "Intelligence Bound"
