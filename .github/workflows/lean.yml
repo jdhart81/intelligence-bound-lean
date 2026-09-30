@@ -1,0 +1,43 @@
+name: Lean proofs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lean-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build every proof and audit axioms
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Refuse sorry and admit
+        run: |
+          if grep -rnwE --include='*.lean' 'sorry|admit' IntelligenceBound IntelligenceBound.lean; then
+            echo "::error::Found sorry or admit in the Lean sources"
+            exit 1
+          fi
+
+      - name: Build with Lake (Mathlib cache)
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1.6.0
+        with:
+          use-mathlib-cache: true
+
+      - name: Audit axioms of the headline theorems
+        run: |
+          set -o pipefail
+          lake env lean scripts/AxiomAudit.lean | tee axioms.txt
+          python3 scripts/check_axioms.py axioms.txt
