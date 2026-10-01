@@ -11,5 +11,4 @@ require mathlib from git
   "f897ebcf72cd16f89ab4577d0c826cd14afaafc7"
 
 @[default_target]
-lean_lib IntelligenceBound where
-  srcDir := "IntelligenceBound"
+lean_lib IntelligenceBound

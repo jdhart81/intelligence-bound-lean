@@ -1,8 +1,12 @@
 # The Intelligence Bound — Formal Verification in Lean 4
 
+[![Lean proofs](https://github.com/jdhart81/intelligence-bound-lean/actions/workflows/lean.yml/badge.svg)](https://github.com/jdhart81/intelligence-bound-lean/actions/workflows/lean.yml)
+
 Formal verification of the mathematical results in
 **"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications
 for Biosphere Information"** (Hart 2025).
+
+> Active development of the Intelligence Bound formalization continues in [Viridis Canon](https://github.com/jdhart81/viridis-canon), the Lean 4 research spine of the Viridis program. This repository keeps the original 2025 formalization reproducible.
 
 ## Building
 
@@ -18,6 +22,14 @@ lake build           # compile the project
 ```
 
 Requires Lean 4.24.0 and Mathlib at commit `f897ebcf`.
+
+## Verify it yourself
+
+Every push to `main` and every pull request rebuilds every proof in this repository against the pinned Mathlib and audits the axioms of the nine headline results (CI badge above). To run the same audit locally after `lake build`:
+
+```bash
+lake env lean scripts/AxiomAudit.lean   # each result should list only propext, Classical.choice, Quot.sound
+```
 
 ## Theorem Map
 

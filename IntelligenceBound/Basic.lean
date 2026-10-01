@@ -12,6 +12,8 @@ Mathlib version: f897ebcf72cd16f89ab4577d0c826cd14afaafc7
 Co-authored-by: Aristotle (Harmonic) <aristotle-harmonic@harmonic.fun>
 -/
 
+import Mathlib
+
 /-!
 # The Intelligence Bound
 
@@ -50,8 +52,6 @@ Implications for Biosphere Information" (Hart 2025).
 * [J. Kaplan et al., *Scaling Laws for Neural Language Models*][kaplan2020]
 * [J. Hoffmann et al., *Training Compute-Optimal Large Language Models*][hoffmann2022]
 -/
-
-import Mathlib
 
 set_option linter.mathlibStandardSet false
 
@@ -232,11 +232,13 @@ lemma indep_self_implies_indep_any {Ω A B : Type*} [MeasurableSpace Ω]
       have := hY t tᶜ ht ht.compl
       simp_all +decide [Set.preimage]
       simp_all +decide [Set.inter_comm, Set.inter_def]
-    rw [MeasureTheory.measure_congr, MeasureTheory.ae_eq_set]
-    exact ⟨by rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]
-      simp +decide,
-      by exact MeasureTheory.measure_mono_null
-        (fun x => by aesop) hY_const⟩
+    apply MeasureTheory.measure_congr
+    rw [MeasureTheory.ae_eq_set]
+    refine ⟨?_, ?_⟩
+    · rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]
+      simp +decide
+    · exact MeasureTheory.measure_mono_null
+        (fun x => by aesop) hY_const
 
 /-- Mutual information is zero iff X and Y are independent.
     Forward direction uses Mathlib's `klDiv_eq_zero_iff` (Gibbs' inequality)
@@ -251,10 +253,9 @@ lemma mutualInformation_eq_zero_iff_indep {Ω A B : Type*}
   constructor
   · intro h
     -- klDiv = 0 → measures are equal (Gibbs' inequality, via Mathlib)
-    rw [klDiv_eq_zero_iff.mp h]
-    rwa [indepFun_iff_map_prod_eq_prod_map_map]
+    exact (indepFun_iff_map_prod_eq_prod_map_map hX hY).mpr (klDiv_eq_zero_iff.mp h)
   · intro h_ind
-    rw [(indepFun_iff_map_prod_eq_prod_map_map.mp h_ind)]
+    rw [(indepFun_iff_map_prod_eq_prod_map_map hX hY).mp h_ind]
     exact klDiv_self _
 
 /-- Entropy is zero iff the variable is independent of itself. -/
@@ -399,10 +400,12 @@ def criticalPower (ρ B : ENNReal) (T kB : NNReal) : ENNReal :=
 lemma thermodynamic_factor_pos_finite (T kB : NNReal)
     (h_kB_pos : 0 < kB) (h_T_pos : 0 < T) :
     0 < thermodynamicFactor T kB ∧ thermodynamicFactor T kB ≠ ⊤ := by
-  exact ⟨by rw [thermodynamicFactor]
-    exact ENNReal.ofReal_pos.mpr (by exact mul_pos (mul_pos h_kB_pos h_T_pos)
-      (Real.log_pos one_lt_two)),
-    by rw [thermodynamicFactor]; exact ENNReal.ofReal_ne_top⟩
+  refine ⟨?_, ?_⟩
+  · rw [thermodynamicFactor]
+    exact ENNReal.ofReal_pos.mpr (mul_pos (mul_pos (NNReal.coe_pos.mpr h_kB_pos)
+      (NNReal.coe_pos.mpr h_T_pos)) (Real.log_pos one_lt_two))
+  · rw [thermodynamicFactor]
+    exact ENNReal.ofReal_ne_top
 
 /-- Phase transition algebra: min(a, b/k) resolves by comparing b to a·k. -/
 theorem phase_transition_algebra (ρB P_enn K : ENNReal)
@@ -410,10 +413,9 @@ theorem phase_transition_algebra (ρB P_enn K : ENNReal)
     (P_enn < ρB * K → min ρB (P_enn / K) = P_enn / K) ∧
     (P_enn ≥ ρB * K → min ρB (P_enn / K) = ρB) := by
   constructor <;> intro h <;> rw [ENNReal.div_eq_inv_mul] at *
-  · rw [min_eq_right, ← ENNReal.div_eq_inv_mul, ENNReal.div_le_iff_le_mul]
-    · exact le_of_lt h
-    · aesop
-    · tauto
+  · rw [min_eq_right]
+    rw [← ENNReal.div_eq_inv_mul, ENNReal.div_le_iff_le_mul (Or.inl hK0) (Or.inl hKt)]
+    exact le_of_lt h
   · rw [min_eq_left]
     convert mul_le_mul_left' h (K⁻¹) using 1; ring
     rw [mul_right_comm, ENNReal.inv_mul_cancel hK0 hKt, one_mul]
@@ -531,14 +533,13 @@ theorem conditional_conservation_core
     have h_lim : Filter.Tendsto (fun T : NNReal => (r_P : ENNReal) * T)
         Filter.atTop (nhds ⊤) := by
       rw [ENNReal.tendsto_nhds_top_iff_nnreal]
-      intro x; exact Filter.eventually_atTop.mpr
-        ⟨⟨x / r_P + 1, by positivity⟩, fun a ha => by
-          exact_mod_cast (by nlinarith [
-            show (r_P : ℝ) > 0 from NNReal.coe_pos.mpr h_preserve_pos,
-            show (a : ℝ) ≥ x / r_P + 1 from mod_cast ha,
-            mul_div_cancel₀ (x : ℝ)
-              (ne_of_gt (NNReal.coe_pos.mpr h_preserve_pos))] :
-            (x : ℝ) < r_P * a)⟩
+      intro x
+      refine Filter.eventually_atTop.mpr ⟨⟨x / r_P + 1, by positivity⟩, fun a ha => ?_⟩
+      have hrP : (r_P : ℝ) > 0 := NNReal.coe_pos.mpr h_preserve_pos
+      have ha' : (a : ℝ) ≥ x / r_P + 1 := mod_cast ha
+      have hdiv := mul_div_cancel₀ (x : ℝ) (ne_of_gt hrP)
+      have hx : (x : ℝ) < r_P * a := by nlinarith
+      exact_mod_cast hx
     rw [ENNReal.tendsto_nhds_top_iff_nnreal] at h_lim
     rcases Filter.eventually_atTop.mp
       (h_lim (ENNReal.toNNReal (ENNReal.ofReal (r_E / degRate)))) with ⟨T₀, hT₀⟩
