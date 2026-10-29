@@ -26,9 +26,12 @@ Implications for Biosphere Information" (Hart 2025).
 * `intelligence_bound` — **Theorem 1**: İ(τ) ≤ min(ρB, P/(k_B T ln 2))
 * `data_bound_lemma_conditional` — **Lemma 1**: İ ≤ ρ · B
 * `thermodynamic_bound_lemma` — **Lemma 2**: İ ≤ P/(k_B T ln 2)
-* `finite_memory_dissipation` — **Lemma 3**: Bounded memory ⟹ power dissipation
-* `learning_dissipation_link` — **Proposition 2**: Learning–dissipation link
-* `conditional_conservation` — **Proposition 7**: Rational long-horizon agents preserve biosphere
+* `finite_memory_dissipation` — **Lemma 3**: assumed Landauer cost on erasure and
+  erasure ≥ İ ⟹ P ≥ İ · k_B T ln 2 (the `BoundedMemory` hypothesis is unused)
+* `learning_dissipation_link` — **Proposition 2**: the same two assumptions ⟹
+  `SatisfiesLandauerLimit`
+* `conditional_conservation` — **Proposition 7**: in the stated utility model,
+  linear preservation utility eventually exceeds bounded exploitation utility
 * `phase_transition_regimes` — **Prediction 2**: Power-limited ↔ data-limited phase transition
 * `data_wall` — **Data Wall**: Low ρ imposes hard ceiling regardless of power
 
@@ -38,6 +41,9 @@ Implications for Biosphere Information" (Hart 2025).
   potentially infinite values without partial functions.
 * `SatisfiesLandauerLimit` is a predicate (hypothesis), not a derived fact,
   cleanly separating the physical assumption from its mathematical consequences.
+  Every result that uses it is conditional on it. That a physical learner
+  satisfies it is the Intelligence Bound conjecture, which this file does not
+  prove (see README, "Status").
 * Mutual information is defined via `klDiv` of the joint vs. product of marginals.
   The equivalence `I(X;Y) = 0 ↔ IndepFun X Y μ` is proven using Mathlib's
   `klDiv_eq_zero_iff` (Gibbs' inequality) and `indepFun_iff_map_prod_eq_prod_map_map`.
@@ -173,7 +179,9 @@ def BoundedMemory {Ω State : Type} [MeasurableSpace Ω] [MeasurableSpace State]
     (μ : Measure Ω) (Y : Process Ω State) (C : NNReal) : Prop :=
   ∀ t, shannonEntropy μ (fun ω => Y ω t) ≤ C
 
-/-- Lemma 3: Bounded memory implies power dissipation ≥ learning rate × k_B T ln 2. -/
+/-- Lemma 3: if power covers an assumed per-bit erasure cost k_B T ln 2 and the
+    erasure rate is at least İ, then P ≥ İ × k_B T ln 2. The proof is transitivity
+    of ≤; the `BoundedMemory` hypothesis `h_mem` is not used. -/
 theorem finite_memory_dissipation {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) (X : Process Ω State)
     (Y : Process Ω State) (τ : NNReal) (C : NNReal) (P T kB : NNReal)
@@ -185,8 +193,8 @@ theorem finite_memory_dissipation {Ω State : Type} [MeasurableSpace Ω]
       ENNReal.ofReal ((kB : ℝ) * (T : ℝ) * Real.log 2) := by
   exact le_trans (mul_le_mul_right' h_erasure_needed _) h_landauer
 
-/-- Proposition 2: Learning–dissipation link. Bounded memory + Landauer ⟹
-    the system satisfies the Landauer limit predicate. -/
+/-- Proposition 2: Learning–dissipation link. The assumed erasure-cost inequality
+    and erasure ≥ İ give the Landauer limit predicate. `h_mem` is not used. -/
 theorem learning_dissipation_link {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) (X : Process Ω State)
     (Y : Process Ω State) (τ : NNReal) (C : NNReal) (P T kB : NNReal)
@@ -369,8 +377,9 @@ theorem data_bound_lemma_conditional {Ω State : Type} [MeasurableSpace Ω]
 
 /-! ## §8 The Intelligence Bound (Theorem 1) -/
 
-/-- **Theorem 1**: The Intelligence Bound.
-    İ(τ) ≤ min(ρB, P/(k_B T ln 2)). -/
+/-- **Theorem 1**: The Intelligence Bound, conditional form.
+    İ(τ) ≤ min(ρB, P/(k_B T ln 2)), given the assumed premise
+    `SatisfiesLandauerLimit` (`h_landauer`), finite B and ρ ≤ 1. -/
 theorem intelligence_bound {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) [IsProbabilityMeasure μ]
     (X : Process Ω State) (O : Process Ω State) (τ : NNReal)
@@ -560,7 +569,8 @@ def makeScenario (degRate initialPot r_E r_P : NNReal)
 
 /-- **Proposition 7**: Conditional Conservation.
     For any valid parameters, ∃ T₀ such that ∀ T > T₀,
-    preservation utility > exploitation utility. -/
+    preservation utility > exploitation utility. Both utility formulas are model
+    inputs; no agent or rationality assumption appears in the statement. -/
 theorem conditional_conservation
     (degRate initialPot r_E r_P : NNReal)
     (h_deg_pos : degRate > 0) (h_init_pos : initialPot > 0)

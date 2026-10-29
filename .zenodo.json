@@ -1,7 +1,7 @@
 {
-  "title": "The Intelligence Bound: Formal Verification in Lean 4",
+  "title": "The Intelligence Bound: Lean 4 Formalization of the Conditional Mathematics",
   "upload_type": "software",
-  "description": "Formal verification in Lean 4 and Mathlib of the results in \"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information\" (Hart 2025): 9 theorems, no sorry, standard axioms only.",
+  "description": "Lean 4 / Mathlib formalization of the conditional mathematics in \"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information\" (Hart 2025): 9 results, no sorry, standard axioms only. The thermodynamic arm is the assumed premise SatisfiesLandauerLimit (P >= dI/dt * k_B T ln 2); it is passed in as a hypothesis, not derived. The physical bound is a conjecture. Lean checks the implications from the stated premises, not that any physical learner satisfies them.",
   "creators": [
     {
       "name": "Hart, Justin D.",
