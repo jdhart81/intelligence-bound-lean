@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this formalization, please cite it using these metadata. Automated proof tools are credited in the README and are not listed as authors."
-title: "The Intelligence Bound: Formal Verification in Lean 4"
+title: "The Intelligence Bound: Lean 4 Formalization of the Conditional Mathematics"
 type: software
 authors:
   - family-names: Hart
@@ -8,7 +8,7 @@ authors:
     affiliation: "Viridis LLC, Columbia Falls, Montana, USA"
     orcid: "https://orcid.org/0009-0008-3082-2482"
 repository-code: "https://github.com/jdhart81/intelligence-bound-lean"
-abstract: "Formal verification in Lean 4 and Mathlib of the results in \"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information\" (Hart 2025): 9 theorems, no sorry, standard axioms only."
+abstract: "Lean 4 / Mathlib formalization of the conditional mathematics in \"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information\" (Hart 2025): 9 results, no sorry, standard axioms only. The thermodynamic arm is the assumed premise SatisfiesLandauerLimit (P >= dI/dt * k_B T ln 2); it is passed in as a hypothesis, not derived. The physical bound is a conjecture. Lean checks the implications from the stated premises, not that any physical learner satisfies them."
 license: Apache-2.0
 keywords:
   - "Lean 4"

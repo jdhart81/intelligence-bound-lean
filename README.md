@@ -1,10 +1,33 @@
-# The Intelligence Bound — Formal Verification in Lean 4
+# The Intelligence Bound — Lean 4 Formalization of the Conditional Mathematics
 
 [![Lean proofs](https://github.com/jdhart81/intelligence-bound-lean/actions/workflows/lean.yml/badge.svg)](https://github.com/jdhart81/intelligence-bound-lean/actions/workflows/lean.yml)
 
-Formal verification of the mathematical results in
+Lean 4 formalization of the mathematical results in
 **"The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications
 for Biosphere Information"** (Hart 2025).
+
+> **Status: the physical Intelligence Bound is a conjecture. Lean checks the
+> mathematics from stated premises.**
+>
+> - **Machine-checked** (Lean 4.24.0, Mathlib `f897ebcf`, axioms limited to
+>   `propext`, `Classical.choice`, `Quot.sound`, no `sorry`): the nine results in the
+>   table below, as implications from their hypotheses. The one substantive
+>   information-theoretic step is Lemma 1, İ ≤ ρ·B, for the defined limsup
+>   quantities.
+> - **Assumed (named premise):** the thermodynamic arm is the hypothesis
+>   `SatisfiesLandauerLimit` (P ≥ İ · k_B T ln 2). It is passed into Lemma 2,
+>   Theorem 1 and the Data Wall as an argument; it is not derived. Lemma 2 is that
+>   premise divided by k_B T ln 2.
+> - **Not established:** that any physical learner satisfies the premise.
+>   Landauer's principle prices erasing a bit, not acquiring one (Bennett; Wolpert),
+>   so the thermodynamic arm applies only to a learner that must erase at least as
+>   fast as it learns. The bound İ ≤ min(ρB, P/(k_B T ln 2)) as a law of physics is
+>   **the Intelligence Bound conjecture**.
+> - **Pipeline:** this repository is rebuilt and axiom-audited by its own CI. It is
+>   not re-checked by the current Viridis Comparator pipeline and has no comparator
+>   certificate. Status labels follow the Viridis Canon
+>   [`THEOREM_STATUS_TAXONOMY.md`](https://github.com/jdhart81/viridis-canon/blob/main/THEOREM_STATUS_TAXONOMY.md)
+>   and [`CLAIMS_MATRIX.md`](https://github.com/jdhart81/viridis-canon/blob/main/CLAIMS_MATRIX.md).
 
 > Active development of the Intelligence Bound formalization continues in [Viridis Canon](https://github.com/jdhart81/viridis-canon), the Lean 4 research spine of the Viridis program. This repository keeps the original 2025 formalization reproducible.
 
@@ -33,17 +56,26 @@ lake env lean scripts/AxiomAudit.lean   # each result should list only propext, 
 
 ## Theorem Map
 
-| Paper Result | Lean Name | Description |
-|---|---|---|
-| **Theorem 1** | `intelligence_bound` | İ(τ) ≤ min(ρB, P/(k_B T ln 2)) |
-| **Lemma 1** | `data_bound_lemma_conditional` | İ ≤ ρ · B (data-processing bound) |
-| **Lemma 2** | `thermodynamic_bound_lemma` | İ ≤ P/(k_B T ln 2) (Landauer bound) |
-| **Lemma 3** | `finite_memory_dissipation` | Bounded memory ⟹ power dissipation ≥ İ · k_B T ln 2 |
-| **Proposition 2** | `learning_dissipation_link` | Learning–dissipation link (Landauer limit predicate) |
-| **Proposition 7** | `conditional_conservation` | Long-horizon rational agents preserve biosphere |
-| **Prediction 1** | `prediction1_rho_dependence` | Data-limited regime: bound = ρ · B |
-| **Prediction 2** | `phase_transition_regimes` | Phase transition at critical power P* = ρBK |
-| **Data Wall** | `data_wall` | Low ρ caps İ at ρ_max · B regardless of power |
+Read the "What Lean checks" column, not the name. "Elementary" marks results that
+follow by unfolding definitions or one line of order algebra.
+
+| Paper result | Lean name | What Lean checks | Load-bearing assumptions | Status |
+|---|---|---|---|---|
+| **Theorem 1** | `intelligence_bound` | İ(τ) ≤ min(ρB, P/(k_B T ln 2)) | `SatisfiesLandauerLimit` (assumed premise), B < ∞, ρ ≤ 1 | Conditional |
+| **Lemma 1** | `data_bound_lemma_conditional` | İ ≤ ρ · B for the defined limsup rates | probability measure, B < ∞, ρ < ∞ | Derived (mathematics of the defined quantities) |
+| **Lemma 2** | `thermodynamic_bound_lemma` | İ ≤ P/(k_B T ln 2) | `SatisfiesLandauerLimit`, which is this inequality multiplied out | Definition-expansion (elementary) |
+| **Lemma 3** | `finite_memory_dissipation` | P ≥ İ · k_B T ln 2 | `P ≥ erasureRate · k_B T ln 2` and `erasureRate ≥ İ`, both assumed; the `BoundedMemory` hypothesis is present but unused | Definition-expansion (elementary; transitivity of ≤) |
+| **Proposition 2** | `learning_dissipation_link` | `SatisfiesLandauerLimit` holds | the same two assumed inequalities as Lemma 3; `BoundedMemory` unused | Definition-expansion (elementary) |
+| **Proposition 7** | `conditional_conservation` | for every large horizon T, r_P·Φ₀·T > r_E·Φ₀·(1 − e^(−λT))/λ | positive rates with r_E > r_P; the two utility formulas are model choices | Conditional (a linear function eventually exceeds a bounded one; no agents or rationality are modeled) |
+| **Prediction 1** | `prediction1_rho_dependence` | if P ≥ ρBK then min(ρB, P/K) = ρB, with K = k_B T ln 2 | none beyond positivity | Definition-expansion (elementary) |
+| **Prediction 2** | `phase_transition_regimes` | min(ρB, P/K) switches branch at P* = ρBK | none beyond positivity | Definition-expansion (elementary) |
+| **Data Wall** | `data_wall` | ρ ≤ ρ_max ⟹ İ ≤ ρ_max · B | as Theorem 1; only the data arm is used, and the data-limited hypothesis is unused | Conditional (corollary of Lemma 1) |
+
+Predictions 1 and 2 are statements about the algebra of the bound's formula. Testing
+them physically needs measured ρ, B, P and T, which this repository does not supply.
+The Viridis Canon replaced the unused bounded-memory hypothesis with a version in
+which bounded memory is load-bearing (`BoundedMemoryDissipation`); this repository
+keeps the original 2025 statements unchanged so the record stays reproducible.
 
 ## Key Definitions
 
@@ -63,8 +95,8 @@ lake env lean scripts/AxiomAudit.lean   # each result should list only propext, 
 
 ## Empirical Hypotheses
 
-These are stated as predicates (not theorems) since they require experimental
-validation:
+These are stated as predicates (not theorems). No theorem here assumes or proves
+them, and none has been tested against data:
 
 | Paper Result | Lean Name |
 |---|---|
@@ -74,7 +106,7 @@ validation:
 
 ## Architecture
 
-The proof relies on Mathlib's:
+The proofs rely on Mathlib's:
 - `InformationTheory.klDiv` — KL divergence and `klDiv_eq_zero_iff` (Gibbs' inequality)
 - `ProbabilityTheory.IndepFun` — independence and `indepFun_iff_map_prod_eq_prod_map_map`
 - `ENNReal` — extended non-negative reals for handling ∞
@@ -97,7 +129,8 @@ Apache 2.0. See [LICENSE](LICENSE).
   title  = {The Intelligence Bound: Thermodynamic Limits on Learning Rate
             and Implications for Biosphere Information},
   year   = {2025},
-  note   = {Formal verification available at
+  note   = {The physical bound is a conjecture. Lean 4 formalization of
+            the conditional mathematics:
             https://github.com/jdhart81/intelligence-bound-lean}
 }
 ```
