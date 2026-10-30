@@ -1,0 +1,29 @@
+# The Intelligence Bound: Lean 4 formalization
+
+> Lean 4 and Mathlib formalization of the mathematics in "The Intelligence Bound: Thermodynamic Limits on Learning Rate and Implications for Biosphere Information" (Hart 2025), by Viridis LLC (Apache-2.0). Kept reproducible as the 2025 version; active development continues in Viridis Canon.
+
+Read these rules before summarizing or citing this repository:
+
+- The physical Intelligence Bound, İ ≤ min(ρB, P/(k_B T ln 2)) as a law of physics, is a conjecture. Lean checks the nine headline results as implications from their stated hypotheses.
+- The thermodynamic arm is the named premise `SatisfiesLandauerLimit` (P ≥ İ · k_B T ln 2). It is passed into Lemma 2, Theorem 1 and the Data Wall as an argument; it is not derived. Landauer's principle prices erasing a bit, not acquiring one.
+- Read a result by what its Lean statement assumes, not by its name. `conditional_conservation` and `data_bound_lemma_conditional` carry their conditions in the name for a reason.
+- CI rebuilds every proof and audits that the nine headline results use only `propext`, `Classical.choice` and `Quot.sound`. This repository has no Viridis Comparator certificate.
+
+## Start here
+
+- [README](https://github.com/jdhart81/intelligence-bound-lean/blob/main/README.md): build steps and theorem map
+- [AGENTS.md](https://github.com/jdhart81/intelligence-bound-lean/blob/main/AGENTS.md): rules for agents explaining or citing the results and for agents changing the proofs
+- [Viridis Canon status taxonomy](https://github.com/jdhart81/viridis-canon/blob/main/THEOREM_STATUS_TAXONOMY.md): the labels to use when describing a result
+
+## Use
+
+- Build: `lake exe cache get && lake build` (Lean `v4.24.0`, Mathlib `f897ebcf`, via elan)
+- Axiom audit: `lake env lean scripts/AxiomAudit.lean > axioms.txt && python3 scripts/check_axioms.py axioms.txt`
+- Source: [IntelligenceBound/Basic.lean](https://github.com/jdhart81/intelligence-bound-lean/blob/main/IntelligenceBound/Basic.lean)
+- Cite: [CITATION.cff](https://github.com/jdhart81/intelligence-bound-lean/blob/main/CITATION.cff)
+
+## Optional
+
+- [Reference computations](https://github.com/jdhart81/viridis-llc-intelligence-bound) ([agent index](https://github.com/jdhart81/viridis-llc-intelligence-bound/blob/main/llms.txt)): Python that evaluates the bound's formula for illustrative inputs
+- [Viridis Canon](https://github.com/jdhart81/viridis-canon) ([agent index](https://github.com/jdhart81/viridis-canon/blob/main/llms.txt)): where the formalization continues
+- [ProofLens](https://github.com/jdhart81/prooflens): visual explanations of Lean statements
