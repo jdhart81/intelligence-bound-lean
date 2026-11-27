@@ -32,6 +32,8 @@ Implications for Biosphere Information" (Hart 2025).
   `SatisfiesLandauerLimit`
 * `conditional_conservation` — **Proposition 7**: in the stated utility model,
   linear preservation utility eventually exceeds bounded exploitation utility
+* `prediction1_rho_dependence` — **Prediction 1**: in the data-limited regime
+  (P ≥ ρBK), min(ρB, P/(k_B T ln 2)) = ρB
 * `phase_transition_regimes` — **Prediction 2**: Power-limited ↔ data-limited phase transition
 * `data_wall` — **Data Wall**: Low ρ imposes hard ceiling regardless of power
 
@@ -62,11 +64,6 @@ Implications for Biosphere Information" (Hart 2025).
 set_option linter.mathlibStandardSet false
 
 open scoped BigOperators Real Nat Classical Pointwise
-
-set_option maxHeartbeats 400000
-set_option maxRecDepth 4000
-set_option synthInstance.maxHeartbeats 20000
-set_option synthInstance.maxSize 128
 
 set_option relaxedAutoImplicit false
 set_option autoImplicit false
@@ -182,6 +179,7 @@ def BoundedMemory {Ω State : Type} [MeasurableSpace Ω] [MeasurableSpace State]
 /-- Lemma 3: if power covers an assumed per-bit erasure cost k_B T ln 2 and the
     erasure rate is at least İ, then P ≥ İ × k_B T ln 2. The proof is transitivity
     of ≤; the `BoundedMemory` hypothesis `h_mem` is not used. -/
+@[nolint unusedArguments]
 theorem finite_memory_dissipation {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) (X : Process Ω State)
     (Y : Process Ω State) (τ : NNReal) (C : NNReal) (P T kB : NNReal)
@@ -195,6 +193,7 @@ theorem finite_memory_dissipation {Ω State : Type} [MeasurableSpace Ω]
 
 /-- Proposition 2: Learning–dissipation link. The assumed erasure-cost inequality
     and erasure ≥ İ give the Landauer limit predicate. `h_mem` is not used. -/
+@[nolint unusedArguments]
 theorem learning_dissipation_link {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) (X : Process Ω State)
     (Y : Process Ω State) (τ : NNReal) (C : NNReal) (P T kB : NNReal)
@@ -477,7 +476,9 @@ theorem prediction1_rho_dependence (ρ B : ENNReal) (P T kB : NNReal)
   exact h_phase.2 h_data_limited
 
 /-- **Data Wall Theorem**: Low ρ imposes a hard ceiling on İ regardless of power.
-    If ρ ≤ ρ_max, then İ ≤ ρ_max · B. -/
+    If ρ ≤ ρ_max, then İ ≤ ρ_max · B. The proof uses only the data arm
+    (`h_rho_bound`); `h_data_limited` is not used. -/
+@[nolint unusedArguments]
 theorem data_wall {Ω State : Type} [MeasurableSpace Ω]
     [MeasurableSpace State] (μ : Measure Ω) [IsProbabilityMeasure μ]
     (X : Process Ω State) (O : Process Ω State) (τ : NNReal)
@@ -499,15 +500,25 @@ theorem data_wall {Ω State : Type} [MeasurableSpace Ω]
 
 /-- Parameters for the biosphere conservation scenario. -/
 structure BiosphereScenario where
+  /-- Time horizon `T`. -/
   (T : NNReal)
+  /-- Exponential biosphere degradation rate `λ` under exploitation. -/
   (degradationRate : NNReal)
+  /-- Initial biosphere information potential `Φ₀`. -/
   (initialPotential : NNReal)
+  /-- Rate of utility extraction `r_E` under exploitation. -/
   (exploitationRate : NNReal)
+  /-- Rate of utility accrual `r_P` under preservation. -/
   (preservationRate : NNReal)
+  /-- Horizon exceeds the characteristic degradation timescale `1 / λ`. -/
   (hT : T > 1 / degradationRate)
+  /-- Degradation rate `λ` is strictly positive. -/
   (h_deg_pos : degradationRate > 0)
+  /-- Initial potential `Φ₀` is strictly positive. -/
   (h_init_pos : initialPotential > 0)
+  /-- Exploitation rate `r_E` exceeds preservation rate `r_P`. -/
   (h_exploit_high : exploitationRate > preservationRate)
+  /-- Preservation rate `r_P` is strictly positive. -/
   (h_preserve_pos : preservationRate > 0)
 
 /-- Utility under preservation: r_P · Φ₀ · T (linear growth). -/
@@ -522,7 +533,8 @@ def utilityExploitation (params : BiosphereScenario) : ENNReal :=
       (params.degradationRate : ℝ)))
 
 /-- Core inequality: ∃ T₀ such that for T > T₀, linear preservation utility
-    exceeds bounded exploitation utility. -/
+    exceeds bounded exploitation utility. Note: `h_init_pos` is not used in the proof. -/
+@[nolint unusedArguments]
 theorem conditional_conservation_core
     (degRate initialPot r_E r_P : NNReal)
     (h_deg_pos : degRate > 0) (h_init_pos : initialPot > 0)

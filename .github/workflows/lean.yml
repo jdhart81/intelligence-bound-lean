@@ -36,6 +36,9 @@ jobs:
         with:
           use-mathlib-cache: true
 
+      - name: Lint IntelligenceBound
+        run: lake env lean scripts/Lint.lean
+
       - name: Audit axioms of the headline theorems
         run: |
           set -o pipefail
