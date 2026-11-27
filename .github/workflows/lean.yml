@@ -36,6 +36,9 @@ jobs:
         with:
           use-mathlib-cache: true
 
+      - name: Check non-vacuity witness
+        run: lake env lean test/NonVacuity.lean
+
       - name: Audit axioms of the headline theorems
         run: |
           set -o pipefail
