@@ -23,7 +23,7 @@ def constProc : Process Unit Bool := fun _ _ => true
 lemma observationEntropy_constProc (t : NNReal) :
     observationEntropy μ₀ constProc t = 0 := by
   change shannonEntropy μ₀ (trajectory constProc t) = 0
-  have h_ae : AEMeasurable (trajectory constProc t) μ₀ := aemeasurable_const
+  have h_ae : AEMeasurable (trajectory constProc t) μ₀ := by unfold trajectory constProc; exact aemeasurable_const
   rw [entropy_eq_zero_iff_indep_self μ₀ (trajectory constProc t) h_ae]
   exact ProbabilityTheory.indepFun_const_left _
 
