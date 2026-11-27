@@ -25,7 +25,7 @@ lemma observationEntropy_constProc (t : NNReal) :
   change shannonEntropy μ₀ (trajectory constProc t) = 0
   have h_ae : AEMeasurable (trajectory constProc t) μ₀ := by unfold trajectory constProc; exact aemeasurable_const
   rw [entropy_eq_zero_iff_indep_self μ₀ (trajectory constProc t) h_ae]
-  unfold trajectory constProc; exact ProbabilityTheory.indepFun_const_left (μ := μ₀) true _
+  unfold trajectory constProc; exact ProbabilityTheory.indepFun_const_left (μ := μ₀) (fun _ => true) _
 
 lemma cumulativePredictiveInformation_constProc (t τ : NNReal) :
     cumulativePredictiveInformation μ₀ constProc constProc t τ = 0 :=
