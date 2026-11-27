@@ -35,10 +35,10 @@ for Biosphere Information"** (Hart 2025).
 
 ```bash
 # Install elan (Lean version manager) if you haven't already
-curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh
+curl [https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh](https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh) -sSf | sh
 
 # Clone and build
-git clone https://github.com/jdhart81/intelligence-bound-lean.git
+git clone [https://github.com/jdhart81/intelligence-bound-lean.git](https://github.com/jdhart81/intelligence-bound-lean.git)
 cd intelligence-bound-lean
 lake exe cache get   # download prebuilt Mathlib .olean files
 lake build           # compile the project
@@ -48,7 +48,7 @@ Requires Lean 4.24.0 and Mathlib at commit `f897ebcf`.
 
 ## Verify it yourself
 
-Every push to `main` and every pull request rebuilds every proof in this repository against the pinned Mathlib and audits the axioms of the nine headline results (CI badge above). To run the same audit locally after `lake build`:
+Every push to `main` and every pull request rebuilds every proof in this repository against the pinned Mathlib and audits the axioms of all 22 theorems and lemmas (CI badge above). To run the same audit locally after `lake build`:
 
 ```bash
 lake env lean scripts/AxiomAudit.lean   # each result should list only propext, Classical.choice, Quot.sound
@@ -131,6 +131,6 @@ Apache 2.0. See [LICENSE](LICENSE).
   year   = {2025},
   note   = {The physical bound is a conjecture. Lean 4 formalization of
             the conditional mathematics:
-            https://github.com/jdhart81/intelligence-bound-lean}
+            [https://github.com/jdhart81/intelligence-bound-lean](https://github.com/jdhart81/intelligence-bound-lean)}
 }
 ```
