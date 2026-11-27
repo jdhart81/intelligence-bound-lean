@@ -14,14 +14,17 @@ namespace IntelligenceBound.NonVacuity
 
 noncomputable def μ₀ : Measure Unit := Measure.dirac ()
 
+noncomputable instance : IsProbabilityMeasure μ₀ := by
+  unfold μ₀
+  infer_instance
+
 def constProc : Process Unit Bool := fun _ _ => true
 
 lemma observationEntropy_constProc (t : NNReal) :
     observationEntropy μ₀ constProc t = 0 := by
-  dsimp [observationEntropy, shannonEntropy, trajectory, constProc]
-  have h_ae : AEMeasurable (fun (_ : Unit) => fun (_ : Set.Icc (0 : NNReal) t) => true) μ₀ :=
-    aemeasurable_const
-  rw [entropy_eq_zero_iff_indep_self μ₀ _ h_ae]
+  change shannonEntropy μ₀ (trajectory constProc t) = 0
+  have h_ae : AEMeasurable (trajectory constProc t) μ₀ := aemeasurable_const
+  rw [entropy_eq_zero_iff_indep_self μ₀ (trajectory constProc t) h_ae]
   exact ProbabilityTheory.indepFun_const_left _
 
 lemma cumulativePredictiveInformation_constProc (t τ : NNReal) :
